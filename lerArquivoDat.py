@@ -74,9 +74,9 @@ def main():
             #         hashtexto[auxText[j]].append(aux)
    
     
-    for i in hashtexto:
-        print(i, hashtexto[i])
-        print('\n')
+    # for i in hashtexto:
+    #     print(i, hashtexto[i])
+    #     print('\n')
     
         #percorro cada palavra do titulo
         for j in range(len(auxTitle)):
@@ -86,35 +86,81 @@ def main():
     # for i in hashtitle:
     #     print(i, hashtitle[i])
     #     print('\n')
-    calculaRank('september', hashtexto, True)
-    calculaRank('september', hashtitle, False)
+    pageRankText = calculaRank('computer', hashtexto, True)
+    pageRankTitle = calculaRank('computer', hashtitle, False)
 
+    AllPageRank = mergePageRankTitleText(pageRankText, pageRankTitle)
+    #AllPageRank = sorted(AllPageRank[0])
+    
+
+def mergePageRankTitleText(pageRankText, pageRankTitle):
+    allPageRank = []
+    allPageRank = pageRankText+pageRankTitle
+
+    for i in range(0, len(allPageRank)-1):
+        
+        for j in range(i+1, len(allPageRank)):
+            if allPageRank[i][0] == allPageRank[j][0]: 
+                print(allPageRank[i], allPageRank[j])
+                del allPageRank[i]
+                #print(allPageRank[i])
+                break
+               
+    return allPageRank
+'''   
+    for i in pageRankText:
+        aux =[]
+        elemento = []
+        #adicionando id
+        aux.append(i[0])
+        #pego o elemento com mesmo id do outro vetor
+        for j in pageRankTitle:
+            if j[0] == i[0]:
+                elemento = j
+                print(i, j)
+                break
+        #se o valor existe no vetor do title eu elimino ele 
+        if len(elemento)> 0:
+            aux.append(i[1]+elemento[1])
+            del pageRankTitle[j[0]]
+            # del pageRankTitle[i[0]]
+        else:
+            aux.append(i[1])    
+        #somo o pageRank do title e do text
+        #aux.append(i[1]+elemento[1])
+        allPageRank.append(aux)
+    if len(pageRankTitle)>0:
+        #se depois que eu somar todos os pageRank iguais entre title e text ainda sobrar algum, eu simplemente adiciono
+        for i in pageRankTitle:
+            allPageRank.append(i)
+
+    return allPageRank
+    '''
 #textOrTitle -> True para text; False para Title
 def calculaRank(palavra, hashTexto, textOrTitle):
-    if(not textOrTitle):  
-        print('\033[32m'+'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'+'\033[0;0m')
-        elemento = hashTexto["10g-epon"]
-    else:
-        elemento = hashTexto[palavra]
-    pageRank = []
-
-    for i in elemento:
-        idPage = int(i[0])
-        qtd = int(i[1])
-        pontos = 0
-        for j in range(1,qtd+1):
-            if(textOrTitle):
-                pontos += j
-            else:
-                pontos +=10
-        aux =[]
-        aux.append(idPage)
-        aux.append(pontos)
-
-        pageRank.append(aux)
-    if(not textOrTitle):  
-        print(pageRank)
     
+    elemento = hashTexto.get(palavra, 0)
+    pageRank = []
+    if elemento != 0:
+        for i in elemento:
+            idPage = int(i[0])
+            qtd = int(i[1])
+            pontos = 0
+            for j in range(1,qtd+1):
+                if(textOrTitle):
+                    pontos += j
+                else:
+                    pontos +=10
+            aux =[]
+            aux.append(idPage)
+            aux.append(pontos)
+
+            pageRank.append(aux)
+        # if(not textOrTitle):  
+        #     print(pageRank)
+    return pageRank
+     
+
 
 def populaHash(palavra, idPagina, hashtexto):
     palavra = palavra.replace('[^0-9a-zA-Z_]', '').replace('=', '')
