@@ -15,6 +15,7 @@ def main():
     paginas = []
     hashtexto = {}
     hashtitle = {}
+    vetorPageRank = []
     file = open('testCollection.dat', 'r', encoding='UTF-8')
 
     #####################################################
@@ -65,23 +66,49 @@ def main():
             hashtitle = populaHash(auxTitle[j], pagina.id, hashtitle)
 
     vetorPalavrasPesquisa = frasePesquisa.split(' ')
+    
     #faz um pageRank de todas as palavras maiores que 4 letras e poe em um vetor de PageRank
     for i in vetorPalavrasPesquisa:
-        vetorPageRank = []
+        # print(i)
+        
         if len(i)>=4:
-            pageRankText = calculaRank(i, hashtexto, True)
+            pageRankText = calculaRank(i.lower(), hashtexto, True)
             #print(pageRankText[0])
-            pageRankTitle = calculaRank(i, hashtitle, False)
+            pageRankTitle = calculaRank(i.lower(), hashtitle, False)
             #print(pageRankTitle[0])
             AllPageRank = mergePageRankTitleText(pageRankText, pageRankTitle)
             
             AllPageRank  = sorted(AllPageRank,  key=lambda ranks: ranks[1],  reverse=True)
-            print(AllPageRank)
+            # print(AllPageRank)
             vetorPageRank.append(AllPageRank)
-            print(len(AllPageRank))
+           
+            # print(len(AllPageRank))
+    
+    #percorre o vetor de pagerank
+    # for i in range(len(vetorPageRank)):
+    print(len(vetorPageRank))
+    Rankfinal = []
+    Rankfinal = mergePagesRanks(vetorPageRank[0], vetorPageRank[1])
+    print("Rank", Rankfinal)
+def mergePagesRanks(rank1, rank2):
+    allPage = []
 
-def mergePAgesRanks(rank1, rank2):
-
+    for i in rank1:
+        aux = []
+        elemento =  []
+        for j in rank2:
+            if j[0] == i[0]:
+                elemento = j
+                break
+        if len(elemento)> 0:  
+            aux.append(i[0])
+            aux.append(i[1]+ j[1])
+            rank2.remove(j)
+        if(len(aux)>0):
+            allPage.append(aux)
+    
+    return allPage
+        
 
     
 
@@ -125,8 +152,8 @@ def calculaRank(palavra, hashTexto, textOrTitle):
         for i in elemento:
             idPage = int(i[0])
             qtd = int(i[1])
-            if idPage ==16796:
-                print(qtd)
+            # if idPage ==16796:
+                # print(qtd)
             pontos = 0
             for j in range(1,qtd+1):
                 if(textOrTitle):
