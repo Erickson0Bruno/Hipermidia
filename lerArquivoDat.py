@@ -13,13 +13,17 @@ class Hash:
         self.idPages = []
 def main():
     paginas = []
-    
     hashtexto = {}
     hashtitle = {}
-    
     file = open('testCollection.dat', 'r', encoding='UTF-8')
+
+    #####################################################
+    frasePesquisa = "Computer Science"
+
+    #####################################################
+
+    #Lê e separa as paginas, title de cada pagina e text tambem
     conteudo = file.read()
-   
     conteudo = conteudo.replace('<collection>','').replace('</collection>','').replace('\n', '')
     conteudo = conteudo[1:]
     conteudo = conteudo.split('<page>')
@@ -43,7 +47,7 @@ def main():
         pagina.text = re.sub(r'[^A-Za-z0-9 ]+', ' ', pagina.text)
         paginas.append(pagina)
     
-
+    #percorro as paginas mapeando as ocorrencias das palavras
     for i in range(len(paginas)):
         pagina = paginas[i]
         #separo cada palavra no texto
@@ -55,70 +59,34 @@ def main():
         for j in range(len(auxText)):
             # auxText[j] = re.sub(r'[^A-Za-z0-9 ]+', ' ', auxText[j]) #.replace('[^0-9a-zA-Z_]', '').replace('=', '')
             hashtexto = populaHash(auxText[j], pagina.id, hashtexto)
-            #se a palavra tem mais de 4 letras
-            # if(len(auxText[j])>4): 
-            #     #se a palavra existe no hash eu adiciono a pagina ou 
-            #     # conto mais ao contador se ja estiver sido encontrada na mesma pagina
-            #     if auxText[j] in hashtexto:   
-                    
-            #         if hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][0] == pagina.id:
-            #             #hashtexto[auxText[j]].append(pagina.id)
-            #             aux = [[pagina.id],[1]]
-            #             hashtexto[auxText[j]].append(aux)
-                        
-            #         else:
-            #             print('\033[32m'+str(hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][0])+'\033[0;0m')
-            #             tabela = int(hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][1])
-            #             tabela += 1
-            #             hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][1] = tabela
-            #     else:
-            #         hashtexto[auxText[j]] = []
-            #         aux = [[pagina.id],[1]]
-            #         hashtexto[auxText[j]].append(aux)
-   
-    
-    # for i in hashtexto:
-    #     print(i, hashtexto[i])
-    #     print('\n')
-    
         #percorro cada palavra do titulo
         for j in range(len(auxTitle)):
             #auxTitle[j] =re.sub(r'[^A-Za-z0-9 ]+', ' ', auxTitle[j]) #auxTitle[j].replace('[^0-9a-zA-Z_]', '').replace('=', '')
             hashtitle = populaHash(auxTitle[j], pagina.id, hashtitle)
-            
-            
-    # for i in hashtitle:
-    #     print(i, hashtitle[i])
-    #     print('\n')
-    pageRankText = calculaRank('computer', hashtexto, True)
-    #print(pageRankText[0])
-    pageRankTitle = calculaRank('computer', hashtitle, False)
-    #print(pageRankTitle[0])
-    AllPageRank = mergePageRankTitleText(pageRankText, pageRankTitle)
-    
-    AllPageRank  = sorted(AllPageRank,  key=lambda ranks: ranks[1],  reverse=True)
-    print(len(AllPageRank))
 
-    for i  in range(10):
-        print(AllPageRank[i])
+    vetorPalavrasPesquisa = frasePesquisa.split(' ')
+    #faz um pageRank de todas as palavras maiores que 4 letras e poe em um vetor de PageRank
+    for i in vetorPalavrasPesquisa:
+        vetorPageRank = []
+        if len(i)>=4:
+            pageRankText = calculaRank(i, hashtexto, True)
+            #print(pageRankText[0])
+            pageRankTitle = calculaRank(i, hashtitle, False)
+            #print(pageRankTitle[0])
+            AllPageRank = mergePageRankTitleText(pageRankText, pageRankTitle)
+            
+            AllPageRank  = sorted(AllPageRank,  key=lambda ranks: ranks[1],  reverse=True)
+            print(AllPageRank)
+            vetorPageRank.append(AllPageRank)
+            print(len(AllPageRank))
+
+def mergePAgesRanks(rank1, rank2):
+
+
     
 
 def mergePageRankTitleText(pageRankText, pageRankTitle):
     allPageRank = []
-    #allPageRank = pageRankText+pageRankTitle
-
-    # for i in range(0, len(allPageRank)-1):
-        
-    #     for j in range(i+1, len(allPageRank)):
-    #         if allPageRank[i][0] == allPageRank[j][0]: 
-                
-    #             print(allPageRank[i], allPageRank[j])
-    #             del allPageRank[[]]
-    #             #print(allPageRank[i])
-    #             break
-               
-    # return allPageRank
-  
     for i in pageRankText:
         aux =[]
         elemento = []
