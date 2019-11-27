@@ -51,104 +51,100 @@ def main():
         #percorro cada palavra do texto da pagina 
         for j in range(len(auxText)):
             auxText[j] = auxText[j].replace('[^0-9a-zA-Z_]', '').replace('=', '')
+            hashtexto = populaHash(auxText[j], pagina.id, hashtexto)
             #se a palavra tem mais de 4 letras
-            if(len(auxText[j])>4): 
-                #se a palavra existe no hash eu adiciono a pagina ou 
-                # conto mais ao contador se ja estiver sido encontrada na mesma pagina
-                if auxText[j] in hashtexto:   
+            # if(len(auxText[j])>4): 
+            #     #se a palavra existe no hash eu adiciono a pagina ou 
+            #     # conto mais ao contador se ja estiver sido encontrada na mesma pagina
+            #     if auxText[j] in hashtexto:   
                     
-                    if hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][0] == pagina.id:
-                        #hashtexto[auxText[j]].append(pagina.id)
-                        aux = [[pagina.id],[1]]
-                        hashtexto[auxText[j]].append(aux)
+            #         if hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][0] == pagina.id:
+            #             #hashtexto[auxText[j]].append(pagina.id)
+            #             aux = [[pagina.id],[1]]
+            #             hashtexto[auxText[j]].append(aux)
                         
-                    else:
-                        print('\033[32m'+str(hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][0])+'\033[0;0m')
-                        tabela = int(hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][1])
-                        tabela += 1
-                        hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][1] = tabela
-                else:
-                    hashtexto[auxText[j]] = []
-                    aux = [[pagina.id],[1]]
-                    hashtexto[auxText[j]].append(aux)
-
-    # for i in hashtexto:
-    #     print(i, hashtexto[i])
-    #     print('\n')
-    '''    
+            #         else:
+            #             print('\033[32m'+str(hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][0])+'\033[0;0m')
+            #             tabela = int(hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][1])
+            #             tabela += 1
+            #             hashtexto[auxText[j]][len(hashtexto[auxText[j]])-1][1] = tabela
+            #     else:
+            #         hashtexto[auxText[j]] = []
+            #         aux = [[pagina.id],[1]]
+            #         hashtexto[auxText[j]].append(aux)
+   
+    
+    for i in hashtexto:
+        print(i, hashtexto[i])
+        print('\n')
+    
         #percorro cada palavra do titulo
         for j in range(len(auxTitle)):
             auxTitle[j] = auxTitle[j].replace('[^0-9a-zA-Z_]', '').replace('=', '')
-            #se a palavra tem mais de 4 letras
-            if(len(auxTitle[j])>4):
-                if auxTitle[j] in hashtexto:
-                    print( hashtexto[auxTitle[j]][len(hashtitle[auxTitle[j]])-1][0])
-                    if hashtexto[auxTitle[j]][len(hashtitle[auxTitle[j]])-1][0] != pagina.id:
-                        hashtitle[auxTitle[j]].append([[pagina.id], [1] ])
-                    else: 
-                        hashtitle[auxTitle[j]][len(hashtitle[auxTitle[j]])-1][1] +=1
-                else:
-                    #instancio o dicionario
-                    hashtexto[str(auxTitle[j])] = []
-                    hashtitle[auxTitle[j]].append([[pagina.id], [1] ])
-    
-    for i in hashtitle:
-        print(i, hashtitle[i])
-        print('\n')
-        
+            hashtitle = populaHash(auxTitle[j], pagina.id, hashtitle)
+            
+    # for i in hashtitle:
+    #     print(i, hashtitle[i])
+    #     print('\n')
+    calculaRank('september', hashtexto, True)
+    calculaRank('september', hashtitle, False)
 
+#textOrTitle -> True para text; False para Title
+def calculaRank(palavra, hashTexto, textOrTitle):
+    if(not textOrTitle):  
+        print('\033[32m'+'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'+'\033[0;0m')
+        elemento = hashTexto["10g-epon"]
+    else:
+        elemento = hashTexto[palavra]
+    pageRank = []
 
-    temNoHash = False
-    for i in range(len(paginas)):
-        pagina = paginas[i]
-        #separo cada paralavra
-        auxText = pagina.text.split(' ')
-        
-        #percorro cada palavra
-        for j in range(len(auxText)):
-            temNoHash = False
-            auxText[j] = auxText[j].replace('.', '').replace(',', '')
-           # print(auxText[j])
-            #se a palavra tem mais de 4 letras
-            if(len(auxText[j])>4):
-                
-                for k in range(len(hashs)):
-                    #verifica se a palavra que achei ja existe no hash
-                    if auxText[j] == hashs[k].word:
-                        if hashs[k].idPages[len(hashs[k].idPages)-1] != pagina.id:
-                            hashs[k].idPages.append(pagina.id)
-                        temNoHash = True   
-                                           
-                if temNoHash == False:
-                    hashAux = Hash()
-                    hashAux.word = auxText[j]
-                    hashAux.idPages.append(pagina.id)
-                    hashs.append(hashAux)
-                    #print(hashAux.word+ '  '+ str(hashAux.idPages))
-'''
+    for i in elemento:
+        idPage = int(i[0])
+        qtd = int(i[1])
+        pontos = 0
+        for j in range(1,qtd+1):
+            if(textOrTitle):
+                pontos += j
+            else:
+                pontos +=10
+        aux =[]
+        aux.append(idPage)
+        aux.append(pontos)
+
+        pageRank.append(aux)
+    if(not textOrTitle):  
+        print(pageRank)
     
+
 def populaHash(palavra, idPagina, hashtexto):
     palavra = palavra.replace('[^0-9a-zA-Z_]', '').replace('=', '')
+    aux = []
     #se a palavra tem mais de 4 letras
     if(len(palavra)>4): 
         #se a palavra existe no hash eu adiciono a pagina ou 
         # conto mais ao contador se ja estiver sido encontrada na mesma pagina
         if palavra in hashtexto:   
-            
-            if hashtexto[palavra][len(hashtexto[palavra)-1][0] == idPagina:
+            ultimoElemento = len(hashtexto[palavra])-1
+            #hashtexto[palavra][ultimoElemento][0] é o idPagina
+            #hashtexto[palavra][ultimoElemento][1] é q quantidade de vezes que a palavra aparece na pg
+            if hashtexto[palavra][ultimoElemento][0] != idPagina:
                 #hashtexto[auxText[j]].append(pagina.id)
-                aux = [[idPagina],[1]]
+                aux.append(idPagina)
+                aux.append(1)
                 hashtexto[palavra].append(aux)
                 
             else:
-                print('\033[32m'+str(hashtexto[palavra][len(hashtexto[palavra])-1][0])+'\033[0;0m')
-                tabela = int(hashtexto[palavra][len(hashtexto[palavra])-1][1])
+                # print('\033[32m'+str(hashtexto[palavra][len(hashtexto[palavra])-1][0])+'\033[0;0m')
+
+                tabela = int(hashtexto[palavra][ultimoElemento][1])
                 tabela += 1
-                hashtexto[palavra][len(hashtexto[palavra])-1][1] = tabela
+                hashtexto[palavra][ultimoElemento][1] = tabela
         else:
             hashtexto[palavra] = []
-            aux = [[idPagina],[1]]
+            aux.append(idPagina)
+            aux.append(1)
             hashtexto[palavra].append(aux)
+            
     return hashtexto
 
 main()
