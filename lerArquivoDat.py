@@ -101,8 +101,9 @@ def mergePageRankTitleText(pageRankText, pageRankTitle):
         
         for j in range(i+1, len(allPageRank)):
             if allPageRank[i][0] == allPageRank[j][0]: 
+                
                 print(allPageRank[i], allPageRank[j])
-                del allPageRank[i]
+                del allPageRank[[]]
                 #print(allPageRank[i])
                 break
                
