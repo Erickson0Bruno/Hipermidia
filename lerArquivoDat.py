@@ -1,4 +1,5 @@
 import xml.dom.minidom as XML
+import re
 
 class Page: 
     def __init__(self):
@@ -35,9 +36,11 @@ def main():
         text = title[1].split('<text>')
         pagina.title = text[0].replace('</title>', '')
         pagina.title = pagina.title.lower()
+        pagina.title = re.sub(r'[^A-Za-z0-9 ]+', ' ', pagina.title)
 
         pagina.text = text[1].replace('</text>', '').replace('</page>', '')
         pagina.text = pagina.text.lower()
+        pagina.text = re.sub(r'[^A-Za-z0-9 ]+', ' ', pagina.text)
         paginas.append(pagina)
     
 
@@ -50,7 +53,7 @@ def main():
 
         #percorro cada palavra do texto da pagina 
         for j in range(len(auxText)):
-            auxText[j] = auxText[j].replace('[^0-9a-zA-Z_]', '').replace('=', '')
+            # auxText[j] = re.sub(r'[^A-Za-z0-9 ]+', ' ', auxText[j]) #.replace('[^0-9a-zA-Z_]', '').replace('=', '')
             hashtexto = populaHash(auxText[j], pagina.id, hashtexto)
             #se a palavra tem mais de 4 letras
             # if(len(auxText[j])>4): 
@@ -80,35 +83,42 @@ def main():
     
         #percorro cada palavra do titulo
         for j in range(len(auxTitle)):
-            auxTitle[j] = auxTitle[j].replace('[^0-9a-zA-Z_]', '').replace('=', '')
+            #auxTitle[j] =re.sub(r'[^A-Za-z0-9 ]+', ' ', auxTitle[j]) #auxTitle[j].replace('[^0-9a-zA-Z_]', '').replace('=', '')
             hashtitle = populaHash(auxTitle[j], pagina.id, hashtitle)
+            
             
     # for i in hashtitle:
     #     print(i, hashtitle[i])
     #     print('\n')
     pageRankText = calculaRank('computer', hashtexto, True)
+    #print(pageRankText[0])
     pageRankTitle = calculaRank('computer', hashtitle, False)
-
+    #print(pageRankTitle[0])
     AllPageRank = mergePageRankTitleText(pageRankText, pageRankTitle)
-    #AllPageRank = sorted(AllPageRank[0])
+    
+    AllPageRank  = sorted(AllPageRank,  key=lambda ranks: ranks[1],  reverse=True)
+    print(len(AllPageRank))
+
+    for i  in range(10):
+        print(AllPageRank[i])
     
 
 def mergePageRankTitleText(pageRankText, pageRankTitle):
     allPageRank = []
-    allPageRank = pageRankText+pageRankTitle
+    #allPageRank = pageRankText+pageRankTitle
 
-    for i in range(0, len(allPageRank)-1):
+    # for i in range(0, len(allPageRank)-1):
         
-        for j in range(i+1, len(allPageRank)):
-            if allPageRank[i][0] == allPageRank[j][0]: 
+    #     for j in range(i+1, len(allPageRank)):
+    #         if allPageRank[i][0] == allPageRank[j][0]: 
                 
-                print(allPageRank[i], allPageRank[j])
-                del allPageRank[[]]
-                #print(allPageRank[i])
-                break
+    #             print(allPageRank[i], allPageRank[j])
+    #             del allPageRank[[]]
+    #             #print(allPageRank[i])
+    #             break
                
-    return allPageRank
-'''   
+    # return allPageRank
+  
     for i in pageRankText:
         aux =[]
         elemento = []
@@ -118,12 +128,12 @@ def mergePageRankTitleText(pageRankText, pageRankTitle):
         for j in pageRankTitle:
             if j[0] == i[0]:
                 elemento = j
-                print(i, j)
+                # print(i, j)
                 break
         #se o valor existe no vetor do title eu elimino ele 
         if len(elemento)> 0:
             aux.append(i[1]+elemento[1])
-            del pageRankTitle[j[0]]
+            pageRankTitle.remove(elemento)
             # del pageRankTitle[i[0]]
         else:
             aux.append(i[1])    
@@ -136,16 +146,19 @@ def mergePageRankTitleText(pageRankText, pageRankTitle):
             allPageRank.append(i)
 
     return allPageRank
-    '''
+    
 #textOrTitle -> True para text; False para Title
 def calculaRank(palavra, hashTexto, textOrTitle):
     
     elemento = hashTexto.get(palavra, 0)
+    
     pageRank = []
     if elemento != 0:
         for i in elemento:
             idPage = int(i[0])
             qtd = int(i[1])
+            if idPage ==16796:
+                print(qtd)
             pontos = 0
             for j in range(1,qtd+1):
                 if(textOrTitle):
@@ -164,10 +177,10 @@ def calculaRank(palavra, hashTexto, textOrTitle):
 
 
 def populaHash(palavra, idPagina, hashtexto):
-    palavra = palavra.replace('[^0-9a-zA-Z_]', '').replace('=', '')
+   # palavra = re.sub(r'[^A-Za-z0-9 ]+', ' ', palavra)  #palavra.replace('[^0-9a-zA-Z_]', ' ').replace('=', '')
     aux = []
     #se a palavra tem mais de 4 letras
-    if(len(palavra)>4): 
+    if(len(palavra)>=4): 
         #se a palavra existe no hash eu adiciono a pagina ou 
         # conto mais ao contador se ja estiver sido encontrada na mesma pagina
         if palavra in hashtexto:   
