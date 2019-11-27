@@ -106,7 +106,15 @@ def mergePagesRanks(rank1, rank2):
             rank2.remove(j)
         if(len(aux)>0):
             allPage.append(aux)
-    
+        else:
+            aux.append(i[0])
+            aux.append(i[1])
+            allPage.append(aux)
+        if len(rank2)>0:
+            for i in rank2:
+                aux.append(i[0])
+                aux.append(i[1])
+                allPage.append(aux)    
     return allPage
         
 
