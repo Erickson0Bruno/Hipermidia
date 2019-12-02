@@ -16,10 +16,11 @@ def main():
     hashtexto = {}
     hashtitle = {}
     vetorPageRank = []
+    Rankfinal = []
     file = open('testCollection.dat', 'r', encoding='UTF-8')
-
+    
     #####################################################
-    frasePesquisa = "Computer Science"
+    frasePesquisa = "Computer Science robot"
 
     #####################################################
 
@@ -83,16 +84,34 @@ def main():
             vetorPageRank.append(AllPageRank)
            
             # print(len(AllPageRank))
+        # print(AllPageRank) 
+        # print('\033[32m'+'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +'\033[0;0m')
     
-    #percorre o vetor de pagerank
-    # for i in range(len(vetorPageRank)):
-    print(len(vetorPageRank))
-    Rankfinal = []
-    Rankfinal = mergePagesRanks(vetorPageRank[0], vetorPageRank[1])
-    print("Rank", Rankfinal)
+    
+    
+    if len(vetorPageRank) > 0:
+        Rankfinal = vetorPageRank[0]
+        #percorre o vetor de pagerank
+        for i in range(len(vetorPageRank)):
+            if (i+1) < len(vetorPageRank):
+                # print(len(vetorPageRank))
+                # Rankfinal = []
+                Rankfinal = mergePagesRanks(Rankfinal, vetorPageRank[i+1])
+                # print("Rank", Rankfinal)
+        Rankfinal = sorted(Rankfinal,  key=lambda ranks: ranks[1],  reverse=True)
+        cont = 0
+        for i in Rankfinal:
+            # print("Rank", Rankfinal)
+            print('\033[32m', 'Pagina: ', i[0], ' Ponto de Rank: ', i[1],'\033[0;0m')
+
+            # cont+=1
+            # if cont == 20:
+            #     break
+    
 def mergePagesRanks(rank1, rank2):
     allPage = []
-
+    vezesPalavra = 0
+    # print(rank1)
     for i in rank1:
         aux = []
         elemento =  []
@@ -100,21 +119,34 @@ def mergePagesRanks(rank1, rank2):
             if j[0] == i[0]:
                 elemento = j
                 break
+
+        #se tem o mesmo elemento nos dois ranks
         if len(elemento)> 0:  
             aux.append(i[0])
             aux.append(i[1]+ j[1])
+            vezesPalavra +=1
             rank2.remove(j)
+        #se entrou no if anterior e preencheu o aux
         if(len(aux)>0):
             allPage.append(aux)
+            aux = []
+        
+        #senão ele preenche o aux com os dados do rank1
         else:
             aux.append(i[0])
             aux.append(i[1])
             allPage.append(aux)
-        if len(rank2)>0:
-            for i in rank2:
-                aux.append(i[0])
-                aux.append(i[1])
-                allPage.append(aux)    
+            aux = []
+           
+        
+    #se ainda existir um rank em no rank 2
+    if len(rank2)>0:
+        for i in rank2:
+            aux.append(i[0])
+            aux.append(i[1])
+            allPage.append(aux) 
+           
+            aux = [] 
     return allPage
         
 
